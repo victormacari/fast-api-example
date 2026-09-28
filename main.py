@@ -4,6 +4,12 @@ from typing import Annotated
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from enum import Enum
+
+class ModelName(str, Enum):
+    alexnet = "alexnet"
+    resnet = "resnet"
+    lenet = "lenet"
 
 tags_metadata = [
     {
@@ -163,5 +169,17 @@ def delete_item(item: str):
     )
 
 
+@app.get("/items/{item}")
+async def read_item(item: int):
+    return {"item": item}
 
+@app.get("/models/{model_name}")
+async def get_model(model_name: ModelName):
+    if model_name is ModelName.alexnet:
+        return {"model_name": model_name, "message": "Deep learning FTW!"}
+    
+    if model_name.value == "lenet":
+        return {"model_name": model_name, "message": "LeCNN all the images"}
+    
+    return {"model_name": model_name, "message": "Have some residuals"}
 
