@@ -118,13 +118,13 @@ def add_item(item: Item):
     )
 
 @app.get("/items", response_model=ItemListResponse, tags=["Random Items Management"])
-def get_randomized_items():
+def get_randomized_items(skip: int = 0, limit: int = 10):
     randomized = items_db.copy()
     random.shuffle(randomized)
 
     return ItemListResponse(
-        original_order=items_db,
-        randomized_order=randomized,
+        original_order=items_db[skip: skip + limit],
+        randomized_order=randomized[skip: skip + limit],
         count=len(items_db)
     )
 
@@ -170,7 +170,9 @@ def delete_item(item: str):
 
 
 @app.get("/items/{item}")
-async def read_item(item: int):
+async def read_item(item: int, q: str | None = None):
+    if q:
+        return {"item": item, "q": q}
     return {"item": item}
 
 @app.get("/models/{model_name}")
