@@ -169,11 +169,16 @@ def delete_item(item: str):
     )
 
 
-@app.get("/items/{item}")
-async def read_item(item: int, q: str | None = None):
+@app.get("/users/{user_id}/items/{item_id}")
+async def read_item(user_id: int, item_id: int, q: str | None = None, short: bool = False):
+    item = {"item_id": item_id, "owner_id": user_id}
     if q:
-        return {"item": item, "q": q}
-    return {"item": item}
+       item.update({"q": q})
+    if not short:
+        item.update(
+            {"description": "This is an amazing item"}
+        )   
+    return item
 
 @app.get("/models/{model_name}")
 async def get_model(model_name: ModelName):
@@ -184,4 +189,15 @@ async def get_model(model_name: ModelName):
         return {"model_name": model_name, "message": "LeCNN all the images"}
     
     return {"model_name": model_name, "message": "Have some residuals"}
+
+@app.get("/items/{item_id}")
+async def read_user_item(
+    item_id: str, needy: str, skip: int = 0, limit: int | None = None
+ ):
+    item = {"item_id": item_id, "needy": needy, "skip": skip, "limit": limit}
+    return item
+
+
+
+
 
